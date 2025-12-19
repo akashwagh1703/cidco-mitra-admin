@@ -17,7 +17,7 @@ function App() {
 
   return (
     <AppProviders>
-      <BrowserRouter>
+      <BrowserRouter basename="/cidco-mitra-admin">
         <AppRouter />
       </BrowserRouter>
     </AppProviders>

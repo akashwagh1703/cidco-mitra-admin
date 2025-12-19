@@ -36,12 +36,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Don't redirect on login page 401 errors
-    const isLoginPage = window.location.pathname === '/login'
+    const isLoginPage = window.location.pathname === '/cidco-mitra-admin/login'
     
     if (error.response?.status === 401 && !isLoginPage) {
       localStorage.removeItem('token')
       localStorage.removeItem('auth-storage')
-      window.location.href = '/login'
+      window.location.href = '/cidco-mitra-admin/login'
     }
     return Promise.reject(error)
   }
