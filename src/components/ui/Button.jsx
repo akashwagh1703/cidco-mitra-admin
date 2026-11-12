@@ -30,6 +30,7 @@ export default function Button({
         ${variants[variant]} 
         ${sizes[size]} 
         rounded-md font-medium transition-colors
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
         disabled:opacity-50 disabled:cursor-not-allowed
         ${className}
       `}

@@ -12,6 +12,7 @@ import AppointmentDetail from './AppointmentDetail';
 import useToastStore from '../../store/toastStore';
 import { appointmentService } from '../../services/appointmentService';
 import { serviceService } from '../../services/serviceService';
+import { formatAppointmentDateTime } from '../../utils/formatters';
 
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -132,9 +133,8 @@ export default function AppointmentList({ onUpdate, serviceFilter }) {
       key: 'appointment_date',
       label: 'Date & Time',
       render: (row) => (
-        <div>
-          <div className="font-medium text-secondary-900 dark:text-white">{new Date(row.appointment_date).toLocaleDateString()}</div>
-          <div className="text-sm text-secondary-500 dark:text-gray-400">{row.appointment_time}</div>
+        <div className="font-medium text-secondary-900 dark:text-white">
+          {formatAppointmentDateTime(row.appointment_date, row.appointment_time)}
         </div>
       ),
     },

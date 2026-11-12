@@ -1,10 +1,25 @@
-export default function Select({ 
-  label, 
-  error, 
+import SearchableSelect from './SearchableSelect'
+
+export default function Select({
+  label,
+  error,
   options = [],
   className = '',
-  ...props 
+  searchable = false,
+  ...props
 }) {
+  if (searchable) {
+    return (
+      <SearchableSelect
+        label={label}
+        error={error}
+        options={options}
+        className={className}
+        {...props}
+      />
+    )
+  }
+
   return (
     <div className="w-full">
       {label && (

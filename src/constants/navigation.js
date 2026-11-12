@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, UserCog, Mail, Settings, Bell, FileText, Briefcase, Calendar } from 'lucide-react'
+import { LayoutDashboard, Users, UserCog, Mail, Settings, Bell, FileText, Briefcase, Calendar, Layers, Contact } from 'lucide-react'
 import { PERMISSIONS } from './permissions'
 
 export const NAVIGATION = [
@@ -12,6 +12,18 @@ export const NAVIGATION = [
     name: 'Leads',
     path: '/leads',
     icon: FileText,
+    permission: PERMISSIONS.MANAGE_LEADS
+  },
+  {
+    name: 'Advance Lead',
+    path: '/advance-leads',
+    icon: Layers,
+    permission: PERMISSIONS.MANAGE_LEADS
+  },
+  {
+    name: 'ADO Master',
+    path: '/ados',
+    icon: Contact,
     permission: PERMISSIONS.MANAGE_LEADS
   },
   {

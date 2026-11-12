@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
-import AuthGuard from './AuthGuard'
+import AuthGuard, { GuestGuard } from './AuthGuard'
 import RoleGuard from './RoleGuard'
 import AdminLayout from '../layouts/AdminLayout'
 import NoAccess from '../layouts/NoAccess'
@@ -10,6 +10,9 @@ const Login = lazy(() => import('../pages/auth/Login'))
 const Dashboard = lazy(() => import('../pages/dashboard/Dashboard'))
 const LeadList = lazy(() => import('../pages/leads/LeadList'))
 const LeadDetail = lazy(() => import('../pages/leads/LeadDetail'))
+const AdvanceLeadList = lazy(() => import('../pages/advance-leads/AdvanceLeadList'))
+const AdvanceLeadDetail = lazy(() => import('../pages/advance-leads/AdvanceLeadDetail'))
+const AdoMaster = lazy(() => import('../pages/ados/AdoMaster'))
 const Appointments = lazy(() => import('../pages/appointments/Appointments'))
 const Notifications = lazy(() => import('../pages/notifications/Notifications'))
 const Users = lazy(() => import('../pages/users/Users'))
@@ -33,7 +36,7 @@ export default function AppRouter() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<GuestGuard><Login /></GuestGuard>} />
         <Route path="/no-access" element={<NoAccess />} />
         
         <Route path="/" element={<AuthGuard><AdminLayout /></AuthGuard>}>
@@ -54,6 +57,24 @@ export default function AppRouter() {
           <Route path="leads/:id" element={
             <RoleGuard permission={PERMISSIONS.MANAGE_LEADS}>
               <LeadDetail />
+            </RoleGuard>
+          } />
+
+          <Route path="advance-leads" element={
+            <RoleGuard permission={PERMISSIONS.MANAGE_LEADS}>
+              <AdvanceLeadList />
+            </RoleGuard>
+          } />
+
+          <Route path="advance-leads/:id" element={
+            <RoleGuard permission={PERMISSIONS.MANAGE_LEADS}>
+              <AdvanceLeadDetail />
+            </RoleGuard>
+          } />
+
+          <Route path="ados" element={
+            <RoleGuard permission={PERMISSIONS.MANAGE_LEADS}>
+              <AdoMaster />
             </RoleGuard>
           } />
           

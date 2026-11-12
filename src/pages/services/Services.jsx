@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Calendar, CalendarCheck } from 'lucide-react'
+import { Plus, Edit, Trash2, Calendar, CalendarCheck, Briefcase } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import PageHeader from '../../components/common/PageHeader'
 import Card from '../../components/ui/Card'
@@ -9,10 +9,11 @@ import Input from '../../components/ui/Input'
 import Textarea from '../../components/ui/Textarea'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Badge from '../../components/ui/Badge'
+import EmptyState from '../../components/ui/EmptyState'
 import ServiceSchedule from './ServiceSchedule'
 import useToastStore from '../../store/toastStore'
 import { serviceService } from '../../services/serviceService'
-import { validateRequired } from '../../utils/validation'
+import { normalizePhoneInput, validatePhone, validateRequired } from '../../utils/validation'
 
 export default function Services() {
   const navigate = useNavigate()
@@ -71,6 +72,10 @@ export default function Services() {
     const newErrors = {}
     if (!formData.title.en) newErrors.title_en = 'English title is required'
     if (!formData.description.en) newErrors.description_en = 'English description is required'
+    const phoneError = validatePhone(formData.phone, false, 'Phone')
+    if (phoneError) newErrors.phone = phoneError
+    const whatsappError = validatePhone(formData.whatsapp, false, 'WhatsApp')
+    if (whatsappError) newErrors.whatsapp = whatsappError
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -147,7 +152,19 @@ export default function Services() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           </div>
         ) : services.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-gray-500">No services found</div>
+          <div className="col-span-full">
+            <EmptyState
+              icon={Briefcase}
+              title="No services found"
+              description="Add a service to display it on the website."
+              action={
+                <Button onClick={() => { setSelectedService(null); setFormData({ title: { en: '', mr: '', hi: '' }, description: { en: '', mr: '', hi: '' }, overview: { en: '', mr: '', hi: '' }, pricing: { en: '', mr: '', hi: '' }, documents: { en: '', mr: '', hi: '' }, timeline: { en: '', mr: '', hi: '' }, icon: '', phone: '', whatsapp: '', appointment_url: '', status: true, order: 0 }); setShowModal(true) }}>
+                  <Plus size={16} className="mr-2" />
+                  Add Service
+                </Button>
+              }
+            />
+          </div>
         ) : (
           services.map((service) => (
             <Card key={service.id}>
@@ -251,8 +268,26 @@ export default function Services() {
 
           <div className="border-t pt-4 space-y-3">
             <h4 className="font-semibold text-secondary-900 dark:text-white">Contact & Assistance</h4>
-            <Input label="Phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 1234567890" />
-            <Input label="WhatsApp" value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="+91 1234567890" />
+            <Input
+              label="Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: normalizePhoneInput(e.target.value) })}
+              error={errors.phone}
+              inputMode="numeric"
+              maxLength={10}
+              minLength={10}
+              placeholder="10-digit mobile"
+            />
+            <Input
+              label="WhatsApp"
+              value={formData.whatsapp}
+              onChange={(e) => setFormData({ ...formData, whatsapp: normalizePhoneInput(e.target.value) })}
+              error={errors.whatsapp}
+              inputMode="numeric"
+              maxLength={10}
+              minLength={10}
+              placeholder="10-digit mobile"
+            />
             <Input label="Appointment URL" value={formData.appointment_url} onChange={(e) => setFormData({ ...formData, appointment_url: e.target.value })} placeholder="https://calendly.com/..." />
           </div>
 

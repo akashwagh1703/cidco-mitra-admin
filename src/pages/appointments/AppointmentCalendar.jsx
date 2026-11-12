@@ -6,6 +6,7 @@ import Modal from '../../components/ui/Modal';
 import AppointmentDetail from './AppointmentDetail';
 import useToastStore from '../../store/toastStore';
 import { appointmentService } from '../../services/appointmentService';
+import { formatTime } from '../../utils/formatters';
 
 const statusColors = {
   pending: 'bg-yellow-50 border-yellow-200 text-yellow-700',
@@ -164,7 +165,7 @@ export default function AppointmentCalendar({ serviceFilter }) {
                           >
                             <div className="flex items-center gap-1 font-medium">
                               <Clock size={10} />
-                              <span>{apt.appointment_time?.substring(0, 5)}</span>
+                              <span>{formatTime(apt.appointment_time)}</span>
                             </div>
                             <div className="truncate font-semibold">{apt.name}</div>
                           </div>

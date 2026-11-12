@@ -5,7 +5,7 @@ export default function Tabs({ tabs, defaultTab = 0 }) {
 
   return (
     <div>
-      <div className="border-b border-secondary-200">
+      <div className="border-b border-secondary-200 dark:border-secondary-700">
         <nav className="flex space-x-8">
           {tabs.map((tab, index) => (
             <button
@@ -13,9 +13,10 @@ export default function Tabs({ tabs, defaultTab = 0 }) {
               onClick={() => setActiveTab(index)}
               className={`
                 py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
                 ${activeTab === index
-                  ? 'border-primary-600 text-primary-600'
-                  : 'border-transparent text-secondary-600 hover:text-secondary-900 hover:border-secondary-300'
+                  ? 'border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400'
+                  : 'border-transparent text-secondary-600 dark:text-secondary-400 hover:text-secondary-900 dark:hover:text-secondary-200 hover:border-secondary-300 dark:hover:border-secondary-600'
                 }
               `}
             >

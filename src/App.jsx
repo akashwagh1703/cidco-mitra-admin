@@ -3,9 +3,11 @@ import { useEffect } from 'react'
 import AppRouter from './router/AppRouter'
 import AppProviders from './components/providers/AppProviders'
 import useUIStore from './store/uiStore'
+import useAuthStore from './store/authStore'
 
 function App() {
   const { theme } = useUIStore()
+  const initializeAuth = useAuthStore((state) => state.initializeAuth)
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -14,6 +16,10 @@ function App() {
       document.documentElement.classList.remove('dark')
     }
   }, [theme])
+
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
 
   return (
     <AppProviders>

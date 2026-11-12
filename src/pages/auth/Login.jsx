@@ -1,19 +1,34 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import Input from '../../components/ui/Input'
 import Button from '../../components/ui/Button'
 import useAuthStore from '../../store/authStore'
 import useToastStore from '../../store/toastStore'
 import { validateEmail, validatePassword } from '../../utils/validation'
-import { DEFAULT_ROLES, PERMISSIONS } from '../../constants/permissions'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login } = useAuthStore()
+  const { login, isAuthenticated, isInitializing } = useAuthStore()
   const { success, error } = useToastStore()
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900">
+        <div className="text-secondary-600 dark:text-secondary-300 text-sm">Loading session...</div>
+      </div>
+    )
+  }
+
+  if (token && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -30,18 +45,15 @@ export default function Login() {
     return Object.keys(newErrors).length === 0
   }
 
-  const fillCredentials = (email, password) => {
-    setFormData({ email, password })
-    setErrors({})
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
 
     setLoading(true)
     setErrors({})
-    
+    // Drop any stale token so login isn't blocked by a queued /auth/me on artisan serve
+    localStorage.removeItem('token')
+
     try {
       const { authService } = await import('../../services/authService')
       const response = await authService.login(formData.email, formData.password)
@@ -68,15 +80,15 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 dark:from-secondary-900 dark:via-secondary-800 dark:to-secondary-900 flex items-center justify-center px-4 transition-colors duration-300">
       <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 border border-secondary-100 dark:border-gray-700 transition-colors duration-300">
+        <div className="bg-white dark:bg-secondary-800 rounded-xl shadow-2xl p-8 border border-secondary-100 dark:border-secondary-700 transition-colors duration-300">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full mb-4">
               <span className="text-2xl font-bold text-primary-700 dark:text-primary-300">CM</span>
             </div>
             <h1 className="text-3xl font-bold text-secondary-900 dark:text-white mb-2">CIDCO Mitra</h1>
-            <p className="text-secondary-600 dark:text-gray-400">Admin Panel Login</p>
+            <p className="text-secondary-600 dark:text-secondary-400">Admin Panel Login</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -87,29 +99,44 @@ export default function Login() {
               value={formData.email}
               onChange={handleChange}
               error={errors.email}
-              placeholder="admin@cidcomitra.gov.in"
+              placeholder="Enter your email"
+              autoComplete="email"
               required
             />
 
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              placeholder="Enter your password"
-              required
-            />
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input type="checkbox" className="rounded border-secondary-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500" />
-                <span className="ml-2 text-sm text-secondary-600 dark:text-gray-400">Remember me</span>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-1">
+                Password
               </label>
-              <button type="button" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
-                Forgot password?
-              </button>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  required
+                  className={`
+                    w-full px-3 py-2 pr-10 border rounded-lg text-sm
+                    bg-white dark:bg-secondary-700 text-secondary-900 dark:text-white
+                    focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+                    transition-colors placeholder:text-secondary-400 dark:placeholder:text-secondary-500
+                    ${errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-secondary-300 dark:border-secondary-600'}
+                  `}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-secondary-500 dark:text-secondary-400 hover:text-secondary-700 dark:hover:text-secondary-200"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
+              )}
             </div>
 
             {errors.submit && (
@@ -122,61 +149,10 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-
-          <div className="mt-6 space-y-3">
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg">
-              <p className="text-xs font-semibold text-blue-900 dark:text-blue-200 mb-3 text-center">Test Credentials (Click to use)</p>
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('admin@cidcomitra.gov.in', 'admin123')}
-                  className="w-full text-left px-3 py-2 bg-white dark:bg-gray-700 rounded border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-blue-900 dark:text-blue-200">Super Admin</span>
-                    <span className="font-mono text-blue-700 dark:text-blue-300">admin@cidcomitra.gov.in</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('priya.sharma@cidcomitra.gov.in', 'password123')}
-                  className="w-full text-left px-3 py-2 bg-white dark:bg-gray-700 rounded border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-blue-900 dark:text-blue-200">Admin</span>
-                    <span className="font-mono text-blue-700 dark:text-blue-300">priya.sharma@cidcomitra.gov.in</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('amit.patel@cidcomitra.gov.in', 'password123')}
-                  className="w-full text-left px-3 py-2 bg-white dark:bg-gray-700 rounded border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-blue-900 dark:text-blue-200">Manager</span>
-                    <span className="font-mono text-blue-700 dark:text-blue-300">amit.patel@cidcomitra.gov.in</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('sneha.desai@cidcomitra.gov.in', 'password123')}
-                  className="w-full text-left px-3 py-2 bg-white dark:bg-gray-700 rounded border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors"
-                >
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold text-blue-900 dark:text-blue-200">Agent</span>
-                    <span className="font-mono text-blue-700 dark:text-blue-300">sneha.desai@cidcomitra.gov.in</span>
-                  </div>
-                </button>
-              </div>
-            </div>
-            <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-              💡 Click any credential above to auto-fill the login form
-            </p>
-          </div>
         </div>
 
-        <p className="text-center text-sm text-secondary-500 dark:text-gray-500 mt-8">
-          © 2024 CIDCO Mitra. All rights reserved.
+        <p className="text-center text-sm text-secondary-500 dark:text-secondary-500 mt-8">
+          © {new Date().getFullYear()} CIDCO Mitra. All rights reserved.
         </p>
       </div>
     </div>

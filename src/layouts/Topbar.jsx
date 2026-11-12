@@ -21,8 +21,39 @@ export default function Topbar() {
 
   useEffect(() => {
     fetchNotifications()
-    const interval = setInterval(fetchNotifications, 30000) // Refresh every 30 seconds
-    return () => clearInterval(interval)
+
+    const tick = () => {
+      if (document.visibilityState === 'visible') fetchNotifications()
+    }
+    const interval = setInterval(tick, 30000)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', tick)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!e.target.closest('[data-dropdown]')) {
+        setShowNotifications(false)
+        setShowProfile(false)
+        setShowLanguage(false)
+      }
+    }
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setShowNotifications(false)
+        setShowProfile(false)
+        setShowLanguage(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKey)
+    }
   }, [])
 
   const fetchNotifications = async () => {
@@ -65,26 +96,36 @@ export default function Topbar() {
     <header className="bg-white dark:bg-secondary-800 border-b border-secondary-200 dark:border-secondary-700 sticky top-0 z-40">
       <div className="flex items-center justify-between px-6 py-4">
         <button
+          type="button"
           onClick={toggleSidebar}
-          className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors text-secondary-900 dark:text-white"
+          className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors text-secondary-900 dark:text-white lg:hidden"
+          aria-label="Open menu"
         >
           <Menu size={20} />
         </button>
+        <div className="hidden lg:block text-sm font-semibold text-secondary-800 dark:text-secondary-100">
+          CIDCO Mitra
+        </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
+            type="button"
             onClick={toggleTheme}
             className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors text-secondary-900 dark:text-white"
             title={theme === 'light' ? t('darkMode') : t('lightMode')}
+            aria-label={theme === 'light' ? t('darkMode') : t('lightMode')}
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
           </button>
 
-          <div className="relative">
+          <div className="relative" data-dropdown>
             <button
-              onClick={() => setShowLanguage(!showLanguage)}
+              type="button"
+              onClick={() => { setShowLanguage(!showLanguage); setShowNotifications(false); setShowProfile(false) }}
               className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors text-secondary-900 dark:text-white"
               title={t('language')}
+              aria-label={t('language')}
+              aria-expanded={showLanguage}
             >
               <Globe size={20} />
             </button>
@@ -105,10 +146,13 @@ export default function Topbar() {
               </div>
             )}
           </div>
-          <div className="relative">
+          <div className="relative" data-dropdown>
             <button
-              onClick={() => setShowNotifications(!showNotifications)}
+              type="button"
+              onClick={() => { setShowNotifications(!showNotifications); setShowLanguage(false); setShowProfile(false) }}
               className="relative p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors text-secondary-900 dark:text-white"
+              aria-label="Notifications"
+              aria-expanded={showNotifications}
             >
               <Bell size={20} />
               {unreadCount > 0 && (
@@ -149,15 +193,18 @@ export default function Topbar() {
             )}
           </div>
 
-          <div className="relative">
+          <div className="relative" data-dropdown>
             <button
-              onClick={() => setShowProfile(!showProfile)}
+              type="button"
+              onClick={() => { setShowProfile(!showProfile); setShowLanguage(false); setShowNotifications(false) }}
               className="flex items-center gap-2 p-2 hover:bg-secondary-100 dark:hover:bg-secondary-700 rounded-md transition-colors"
+              aria-label="Account menu"
+              aria-expanded={showProfile}
             >
               <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
                 <User size={16} className="text-primary-700 dark:text-primary-300" />
               </div>
-              <span className="text-sm font-medium text-secondary-900 dark:text-white">{user?.name}</span>
+              <span className="hidden sm:inline text-sm font-medium text-secondary-900 dark:text-white">{user?.name}</span>
             </button>
 
             {showProfile && (

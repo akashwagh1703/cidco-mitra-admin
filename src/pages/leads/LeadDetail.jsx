@@ -143,7 +143,7 @@ export default function LeadDetail() {
                   <label className="text-sm font-medium text-secondary-700 dark:text-gray-400 flex items-center gap-2">
                     <Calendar size={16} /> Created At
                   </label>
-                  <p className="mt-1 text-secondary-900 dark:text-white font-medium">{formatDateTime(lead.createdAt)}</p>
+                  <p className="mt-1 text-secondary-900 dark:text-white font-medium">{formatDateTime(lead.created_at)}</p>
                 </div>
               </div>
             </div>

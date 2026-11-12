@@ -9,7 +9,7 @@ import Select from '../../components/ui/Select'
 import Table from '../../components/tables/Table'
 import Pagination from '../../components/tables/Pagination'
 import { LEAD_STATUS, LEAD_STATUS_CONFIG } from '../../constants/leadStatus'
-import { formatDate } from '../../utils/formatters'
+import { formatDateTime } from '../../utils/formatters'
 import { leadService } from '../../services/leadService'
 import useDebounce from '../../hooks/useDebounce'
 
@@ -141,10 +141,10 @@ export default function LeadList() {
       }
     },
     {
-      key: 'createdAt',
+      key: 'created_at',
       label: 'Date',
       sortable: true,
-      render: (lead) => formatDate(lead.createdAt)
+      render: (lead) => formatDateTime(lead.created_at)
     },
     {
       key: 'actions',

@@ -27,9 +27,10 @@ export default function Toast() {
             key={toast.id}
             className={`
               flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg
-              min-w-[300px] max-w-md
+              min-w-[300px] max-w-md animate-slide-in-right
               ${colors[toast.type]}
             `}
+            role="status"
           >
             <Icon size={20} />
             <p className="flex-1 text-sm font-medium">{toast.message}</p>

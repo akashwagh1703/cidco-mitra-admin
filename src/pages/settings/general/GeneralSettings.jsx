@@ -7,7 +7,7 @@ import Textarea from '../../../components/ui/Textarea'
 import Button from '../../../components/ui/Button'
 import useToastStore from '../../../store/toastStore'
 import { settingService } from '../../../services/settingService'
-import { validateEmail, validatePhone, validateRequired } from '../../../utils/validation'
+import { normalizePhoneInput, validateEmail, validatePhone, validateRequired } from '../../../utils/validation'
 
 export default function GeneralSettings() {
   const { success, error } = useToastStore()
@@ -38,7 +38,11 @@ export default function GeneralSettings() {
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setFormData({
+      ...formData,
+      [name]: name === 'contact_phone' ? normalizePhoneInput(value) : value,
+    })
   }
 
   const validate = () => {
@@ -94,6 +98,10 @@ export default function GeneralSettings() {
                 value={formData.contact_phone}
                 onChange={(e) => { handleChange(e); setErrors({ ...errors, contact_phone: '' }) }}
                 error={errors.contact_phone}
+                inputMode="numeric"
+                maxLength={10}
+                minLength={10}
+                placeholder="10-digit mobile"
                 required
               />
               <Input

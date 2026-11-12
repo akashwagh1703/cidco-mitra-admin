@@ -1,8 +1,8 @@
 import api from './api'
 
 export const leadService = {
-  getLeads: async (params) => {
-    const response = await api.get('/admin/leads', { params })
+  getLeads: async (params, config = {}) => {
+    const response = await api.get('/admin/leads', { params, ...config })
     return response.data
   },
 
@@ -11,8 +11,15 @@ export const leadService = {
     return response.data
   },
 
-  updateLead: async (id, data) => {
-    const response = await api.put(`/admin/leads/${id}`, data)
+  createLead: async (data) => {
+    const response = await api.post('/admin/leads', data)
+    return response.data
+  },
+
+  updateLead: async (id, data, options = {}) => {
+    const response = await api.put(`/admin/leads/${id}`, data, {
+      headers: options.trackerCell ? { 'X-Tracker-Cell': '1' } : undefined,
+    })
     return response.data
   },
 

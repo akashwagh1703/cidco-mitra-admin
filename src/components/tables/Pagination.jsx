@@ -7,16 +7,16 @@ export default function Pagination({
   totalItems,
   itemsPerPage 
 }) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
   const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-secondary-200 dark:border-gray-700 bg-secondary-50 dark:bg-gray-800">
-      <div className="text-sm text-secondary-600 dark:text-gray-400 font-medium">
-        Showing <span className="text-secondary-900 dark:text-white">{startItem}</span> to <span className="text-secondary-900 dark:text-white">{endItem}</span> of <span className="text-secondary-900 dark:text-white">{totalItems}</span> results
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-3 sm:px-6 py-3 sm:py-4 border-t border-secondary-200 dark:border-gray-700 bg-secondary-50 dark:bg-gray-800">
+      <div className="text-xs sm:text-sm text-secondary-600 dark:text-gray-400 font-medium text-center sm:text-left">
+        Showing <span className="text-secondary-900 dark:text-white">{startItem}</span> to <span className="text-secondary-900 dark:text-white">{endItem}</span> of <span className="text-secondary-900 dark:text-white">{totalItems}</span>
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}

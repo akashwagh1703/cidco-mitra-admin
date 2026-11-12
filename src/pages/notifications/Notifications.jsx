@@ -4,6 +4,7 @@ import PageHeader from '../../components/common/PageHeader'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Tabs from '../../components/ui/Tabs'
+import EmptyState from '../../components/ui/EmptyState'
 import useNotificationStore from '../../store/notificationStore'
 import { formatRelativeTime } from '../../utils/formatters'
 import { notificationService } from '../../services/notificationService'
@@ -51,25 +52,37 @@ export default function Notifications() {
   const NotificationList = ({ items }) => (
     <div className="space-y-3">
       {items.length === 0 ? (
-        <div className="text-center py-8 text-secondary-600">
-          No notifications
-        </div>
+        <EmptyState
+          icon={Bell}
+          title="No notifications"
+          description="You're all caught up."
+        />
       ) : (
         items.map((notification) => (
           <div
             key={notification.id}
             className={`p-4 rounded-lg border transition-colors ${
-              notification.read_at ? 'bg-white border-secondary-200' : 'bg-blue-50 border-blue-200'
+              notification.read_at
+                ? 'bg-white dark:bg-secondary-800 border-secondary-200 dark:border-secondary-700'
+                : 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800'
             }`}
           >
             <div className="flex items-start gap-3">
-              <div className={`p-2 rounded-lg ${notification.read_at ? 'bg-secondary-100' : 'bg-blue-100'}`}>
-                <Bell size={20} className={notification.read_at ? 'text-secondary-600' : 'text-blue-600'} />
+              <div className={`p-2 rounded-lg ${
+                notification.read_at
+                  ? 'bg-secondary-100 dark:bg-secondary-700'
+                  : 'bg-blue-100 dark:bg-blue-900/50'
+              }`}>
+                <Bell size={20} className={
+                  notification.read_at
+                    ? 'text-secondary-600 dark:text-secondary-400'
+                    : 'text-blue-600 dark:text-blue-400'
+                } />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-secondary-900">{notification.title}</h4>
-                <p className="text-sm text-secondary-600 mt-1">{notification.message}</p>
-                <p className="text-xs text-secondary-500 mt-2">
+                <h4 className="font-medium text-secondary-900 dark:text-white">{notification.title}</h4>
+                <p className="text-sm text-secondary-600 dark:text-secondary-400 mt-1">{notification.message}</p>
+                <p className="text-xs text-secondary-500 dark:text-secondary-500 mt-2">
                   {formatRelativeTime(notification.created_at)}
                 </p>
               </div>
@@ -109,7 +122,11 @@ export default function Notifications() {
       />
 
       <Card>
-        <Tabs tabs={tabs} />
+        {loading ? (
+          <div className="py-10 text-center text-sm text-secondary-500 dark:text-secondary-400">Loading...</div>
+        ) : (
+          <Tabs tabs={tabs} />
+        )}
       </Card>
     </div>
   )

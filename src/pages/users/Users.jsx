@@ -11,7 +11,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import Badge from '../../components/ui/Badge'
 import useToastStore from '../../store/toastStore'
 import { userService } from '../../services/userService'
-import { validateEmail, validatePassword, validateRequired } from '../../utils/validation'
+import { validateEmail, validatePasswordStrength, validateRequired } from '../../utils/validation'
 
 export default function Users() {
   const { success, error } = useToastStore()
@@ -55,7 +55,7 @@ export default function Users() {
     const newErrors = {}
     const nameError = validateRequired(formData.name, 'Name')
     const emailError = validateEmail(formData.email)
-    const passwordError = !selectedUser ? validatePassword(formData.password) : ''
+    const passwordError = !selectedUser ? validatePasswordStrength(formData.password) : ''
     if (nameError) newErrors.name = nameError
     if (emailError) newErrors.email = emailError
     if (passwordError) newErrors.password = passwordError

@@ -6,6 +6,7 @@ import Textarea from '../../components/ui/Textarea';
 import Badge from '../../components/ui/Badge';
 import useToastStore from '../../store/toastStore';
 import { appointmentService } from '../../services/appointmentService';
+import { formatDate, formatTime } from '../../utils/formatters';
 
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
@@ -64,12 +65,14 @@ export default function AppointmentDetail({ appointment, onClose, onUpdate }) {
           <div>
             <label className="text-sm font-medium text-secondary-700 dark:text-gray-400">Date</label>
             <p className="mt-1 text-secondary-900 dark:text-white font-medium">
-              {new Date(appointment.appointment_date).toLocaleDateString()}
+              {formatDate(appointment.appointment_date)}
             </p>
           </div>
           <div>
             <label className="text-sm font-medium text-secondary-700 dark:text-gray-400">Time</label>
-            <p className="mt-1 text-secondary-900 dark:text-white font-medium">{appointment.appointment_time}</p>
+            <p className="mt-1 text-secondary-900 dark:text-white font-medium">
+              {formatTime(appointment.appointment_time)}
+            </p>
           </div>
         </div>
 
